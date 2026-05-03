@@ -19,6 +19,7 @@
             background: rgba(0, 0, 0, 0.7); padding: 8px 20px; border-radius: 20px; z-index: 9999; display: none;
         }
 
+        /* Pantalla del conductor */
         #countdown-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.95); 
@@ -33,6 +34,23 @@
         .next-text { font-size: 20px; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
         .next-name { font-size: 50px; font-weight: bold; margin-bottom: 40px; }
         .timer { font-size: 80px; color: #ff0050; font-weight: bold; }
+
+        /* NUEVO: Pantalla de bloqueo de YouTube */
+        #blocked-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.9); 
+            z-index: 999999; 
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ff0050;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        .blocked-icon { font-size: 80px; margin-bottom: 20px; }
+        .blocked-text { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
+        .blocked-sub { font-size: 18px; color: #888; }
     </style>
 </head>
 <body>
@@ -43,6 +61,13 @@
         <div class="next-text">A continuación</div>
         <div class="next-name" id="next-singer-name">Nadie</div>
         <div class="timer" id="countdown-timer">5</div>
+    </div>
+
+    <!-- NUEVO: El cartel de bloqueo -->
+    <div id="blocked-overlay">
+        <div class="blocked-icon">⛔</div>
+        <div class="blocked-text">VIDEO BLOQUEADO POR YOUTUBE</div>
+        <div class="blocked-sub">Esta versión no se puede reproducir.<br>Prueba buscando otra versión.</div>
     </div>
 
     <div id="player"></div>
@@ -94,9 +119,18 @@
             }
         }
 
+        // NUEVO: Qué hacer si YouTube bloquea el video
         function onPlayerError(event) {
-            forceNextPlay = true;
-            queueRef.child(playlist[0].id).remove();
+            console.log("Video bloqueado. Mostrando advertencia...");
+            const overlay = document.getElementById("blocked-overlay");
+            overlay.style.display = 'flex';
+            
+            // Esperamos 4 segundos para que el público lea, luego borramos y saltamos
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                forceNextPlay = true;
+                queueRef.child(playlist[0].id).remove();
+            }, 4000);
         }
 
         function showCountdown(nextName) {
@@ -143,13 +177,10 @@
             }
         }
 
-        // LA LÍNEA MÁGICA QUE EVITA QUE ANULE LA CANCIÓN
         queueRef.on('child_added', (snapshot) => {
             const data = snapshot.val();
             playlist.push({ id: snapshot.key, videoId: data.videoId, name: data.name });
             document.getElementById('status').innerText = "En cola: " + playlist.length;
-            
-            // Solo reproduce si NO hay nada sonando actualmente
             if (!isPlaying) playNext(); 
         });
 
