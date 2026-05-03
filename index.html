@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TV Karaoke</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; background: black; overflow: hidden; }
+        #player { width: 100vw; height: 100vh; }
+        
+        #status { 
+            position: fixed; top: 10px; right: 10px; 
+            color: #555; font-family: sans-serif; font-size: 14px; 
+            background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 3px; z-index: 9999; 
+        }
+        
+        #singer-label {
+            position: fixed; bottom: 25px; left: 25px;
+            color: white; font-family: sans-serif; font-size: 20px; font-weight: normal;
+            background: rgba(0, 0, 0, 0.7); padding: 8px 20px; border-radius: 20px; z-index: 9999; display: none;
+        }
+
+        #countdown-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95); 
+            z-index: 999999; 
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: sans-serif;
+        }
+        .next-text { font-size: 20px; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .next-name { font-size: 50px; font-weight: bold; margin-bottom: 40px; }
+        .timer { font-size: 80px; color: #ff0050; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="status">En cola: 0</div>
+    <div id="singer-label">🎤 <span id="singer-name">Anónimo</span></div>
+    
+    <div id="countdown-overlay">
+        <div class="next-text">A continuación</div>
+        <div class="next-name" id="next-singer-name">Nadie</div>
+        <div class="timer" id="countdown-timer">5</div>
+    </div>
+
+    <div id="player"></div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+           apiKey: "AIzaSyCvRlHlmkCsK1PMTgKda-IW_ZpFCs4OMfc",
+  	   authDomain: "karaoke-oa01.firebaseapp.com",
+  	   databaseURL: "https://karaoke-oa01-default-rtdb.firebaseio.com",
+  	   projectId: "karaoke-oa01",
+  	   storageBucket: "karaoke-oa01.firebasestorage.app",
+ 	   messagingSenderId: "494779868067",
+ 	   appId: "1:494779868067:web:10768f9f3d88e7e8c6f016",
+ 	   measurementId: "G-HV4BKVH5FY"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const queueRef = db.ref('queue');
+
+        let player;
+        let playlist = [];
+        let isPlaying = false;
+        let countdownInterval;
+        let forceNextPlay = false; // Nueva bandera limpia
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%', width: '100%', videoId: '',
+                playerVars: { 'playsinline': 1, 'autoplay': 1, 'controls': 1 },
+                events: { 
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.ENDED) {
+                if (playlist.length > 1) {
+                    showCountdown(playlist[1].name);
+                } else {
+                    queueRef.child(playlist[0].id).remove();
+                }
+            }
+        }
+
+        function onPlayerError(event) {
+            forceNextPlay = true;
+            queueRef.child(playlist[0].id).remove();
+        }
+
+        function showCountdown(nextName) {
+            const overlay = document.getElementById('countdown-overlay');
+            const nameDiv = document.getElementById('next-singer-name');
+            const timerDiv = document.getElementById('countdown-timer');
+            
+            nameDiv.innerText = nextName || "Alguien misterioso...";
+            overlay.style.display = 'flex';
+            
+            let timeLeft = 5;
+            timerDiv.innerText = timeLeft;
+
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                timerDiv.innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    overlay.style.display = 'none'; 
+                    forceNextPlay = true; // Le avisamos a Firebase que vamos a forzar
+                    queueRef.child(playlist[0].id).remove(); // Solo borramos. NADA MÁS. Firebase hará el resto.
+                }
+            }, 1000); 
+        }
+
+        function playNext() {
+            if (playlist.length > 0) {
+                isPlaying = true;
+                player.loadVideoById(playlist[0].videoId);
+                
+                document.getElementById('status').innerText = "En cola: " + playlist.length;
+                const singerDiv = document.getElementById("singer-label");
+                const nameSpan = document.getElementById("singer-name");
+                nameSpan.innerText = playlist[0].name || "Anónimo";
+                singerDiv.style.display = "block";
+            } else {
+                isPlaying = false;
+                player.stopVideo();
+                document.getElementById('status').innerText = "En cola: 0";
+                document.getElementById("singer-label").style.display = "none";
+            }
+        }
+
+        // El vigilante de Firebase
+        queueRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            playlist.push({ id: snapshot.key, videoId: data.videoId, name: data.name });
+            document.getElementById('status').innerText = "En cola: " + playlist.length;
+            if (!isPlaying) playNext();
+        });
+
+        queueRef.on('child_removed', (snapshot) => {
+            playlist = playlist.filter(item => item.id !== snapshot.key);
+            document.getElementById('status').innerText = "En cola: " + playlist.length;
+            
+            if (forceNextPlay) {
+                forceNextPlay = false;
+                playNext();
+            } else {
+                if (playlist.length > 0 || isPlaying) {
+                    playNext();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
