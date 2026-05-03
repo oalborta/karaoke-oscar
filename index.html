@@ -71,7 +71,7 @@
         let playlist = [];
         let isPlaying = false;
         let countdownInterval;
-        let forceNextPlay = false; // Nueva bandera limpia
+        let forceNextPlay = false;
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
@@ -117,8 +117,10 @@
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
                     overlay.style.display = 'none'; 
-                    forceNextPlay = true; // Le avisamos a Firebase que vamos a forzar
-                    queueRef.child(playlist[0].id).remove(); // Solo borramos. NADA MÁS. Firebase hará el resto.
+                    forceNextPlay = true;
+                    queueRef.child(playlist[0].id).remove();
+                    playlist.shift();
+                    playNext();
                 }
             }, 1000); 
         }
@@ -141,12 +143,14 @@
             }
         }
 
-        // El vigilante de Firebase
+        // LA LÍNEA MÁGICA QUE EVITA QUE ANULE LA CANCIÓN
         queueRef.on('child_added', (snapshot) => {
             const data = snapshot.val();
             playlist.push({ id: snapshot.key, videoId: data.videoId, name: data.name });
             document.getElementById('status').innerText = "En cola: " + playlist.length;
-            if (!isPlaying) playNext();
+            
+            // Solo reproduce si NO hay nada sonando actualmente
+            if (!isPlaying) playNext(); 
         });
 
         queueRef.on('child_removed', (snapshot) => {
