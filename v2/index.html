@@ -229,7 +229,7 @@
             let code = e.target.value.trim().toUpperCase();
             if(code.length >= 3) {
                 // Magia nativa: reemplaza 'index.html' por 'mando.html'. A prueba de balas.
-                let baseMando = window.location.href.replace('index.html', 'mando.html');
+                let baseMando = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + 'mando.html';
                 
                 let urlDj = baseMando + "?room=" + code + "&role=dj";
                 let urlGuest = baseMando + "?room=" + code + "&role=guest";
