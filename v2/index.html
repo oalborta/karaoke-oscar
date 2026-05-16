@@ -27,7 +27,7 @@
         #player { width: 100vw; height: 100vh; }
         
         /* Pilotos flotantes elegantes (Glass) */
-        .hud-box { position: fixed; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #666; font-size: 13px; font-weight: 500; letter-spacing: 1px;}
+        .hud-box { position: fixed; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #666; font-size: 13px; font-weight: 500; ter-spacing: 1px;}
         
         #room-code-display { top: 20px; left: 20px; padding: 8px 16px; color: #777;}
         #status { top: 20px; right: 20px; padding: 8px 16px; }
@@ -44,8 +44,8 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 999999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
         
         /* Conductor */
-        #countdown-overlay .next-text { font-size: 14px; color: #555; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 5px; font-weight: 600;}
-        #countdown-overlay .next-name { font-size: 48px; font-weight: 300; margin-bottom: 10px; color: #eee; letter-spacing: 2px;}
+        #countdown-overlay .next-text { font-size: 14px; color: #555; margin-bottom: 15px; text-transform: uppercase; ter-spacing: 5px; font-weight: 600;}
+        #countdown-overlay .next-name { font-size: 48px; font-weight: 300; margin-bottom: 10px; color: #eee; ter-spacing: 2px;}
         #countdown-overlay .result { font-size: 20px; color: #888; margin-bottom: 20px; font-weight: 500;}
         #countdown-overlay .timer { font-size: 80px; color: #ff0050; font-weight: 200; letter-spacing: -5px; }
         
@@ -233,7 +233,7 @@
         document.getElementById('room-input').addEventListener('input', function(e) {
             let code = e.target.value.trim().toUpperCase();
             if(code.length >= 3) {
-                let basePath = window.location.origin + window.location.pathname; 
+                let basePath = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/mando.html'; 
                 let urlDj = basePath + "?room=" + code + "&role=dj";
                 let urlGuest = basePath + "?room=" + code + "&role=guest";
                 
