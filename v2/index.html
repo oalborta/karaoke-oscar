@@ -3,675 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karaoke de Oscar Alborta</title>
+    <title>Karaoke</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #000000;
-            color: #ffffff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            background:#000;color:#fff;height:100vh;overflow:hidden;
+            background-image:
+                radial-gradient(ellipse at 15% 50%,rgba(255,0,80,.025) 0%,transparent 55%),
+                radial-gradient(ellipse at 85% 20%,rgba(0,255,0,.015) 0%,transparent 50%),
+                radial-gradient(ellipse at 50% 90%,rgba(255,215,0,.012) 0%,transparent 45%);
         }
 
-        /* Header */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            flex-shrink: 0;
+        /* ===== SETUP ===== */
+        #screen-setup{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200}
+        .setup-card{
+            background:rgba(255,255,255,.02);
+            backdrop-filter:blur(60px) saturate(140%);-webkit-backdrop-filter:blur(60px) saturate(140%);
+            border:1px solid rgba(255,255,255,.05);
+            border-radius:28px;padding:52px 44px 44px;text-align:center;
+            box-shadow:0 32px 80px rgba(0,0,0,.5);
+            max-width:360px;width:88%;
         }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .setup-title{font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;color:#fff}
+        .setup-sub{font-size:12px;color:#444;letter-spacing:.5px;margin-bottom:36px;font-weight:400}
+        .setup-card input{
+            width:100%;padding:16px;font-size:30px;text-align:center;letter-spacing:10px;
+            border-radius:16px;border:1px solid rgba(255,255,255,.07);
+            background:rgba(255,255,255,.03);color:#ff0050;outline:none;
+            text-transform:uppercase;font-weight:700;
+            transition:border-color .3s,box-shadow .3s;
         }
-        .header-left .mic {
-            color: #ff0050;
-            font-size: 22px;
+        .setup-card input:focus{border-color:rgba(255,0,80,.4);box-shadow:0 0 0 3px rgba(255,0,80,.08)}
+        .setup-card input::placeholder{color:#262626;font-size:13px;letter-spacing:2px;font-weight:400}
+        .setup-card button{
+            display:block;width:100%;margin-top:16px;padding:15px;font-size:14px;font-weight:600;
+            letter-spacing:.5px;color:#fff;
+            background:linear-gradient(135deg,#ff0050 0%,#d6004a 100%);
+            border:none;border-radius:14px;cursor:pointer;
+            transition:transform .15s,box-shadow .3s;
+            box-shadow:0 4px 20px rgba(255,0,80,.15);
         }
-        .header-left .title {
-            font-size: 14px;
-            font-weight: 300;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #ffffff;
+        .setup-card button:active{transform:scale(.97)}
+        .setup-card button:hover{box-shadow:0 6px 28px rgba(255,0,80,.25)}
+
+        /* ===== MAIN ===== */
+        #screen-main{display:none;height:100vh;flex-direction:column}
+
+        .hdr{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:10px 20px;flex-shrink:0;
+            background:rgba(255,255,255,.015);
+            border-bottom:1px solid rgba(255,255,255,.04);
         }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .hdr-left{display:flex;align-items:center;gap:8px}
+        .hdr-mic{color:#ff0050;font-size:16px;opacity:.7}
+        .hdr-tit{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5)}
+        .hdr-right{display:flex;align-items:center;gap:10px}
+        .room-lbl{font-size:9px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:500}
+        .room-val{font-size:15px;font-weight:700;color:#ff0050;letter-spacing:4px;text-shadow:0 0 20px rgba(255,0,80,.3)}
+        .btn-glass{
+            background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+            color:rgba(255,255,255,.35);border-radius:10px;padding:6px 14px;cursor:pointer;
+            font-size:10px;font-weight:600;letter-spacing:.5px;transition:all .2s;
+            backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
         }
-        .room-label {
-            font-size: 11px;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .room-code {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ff0050;
-            letter-spacing: 5px;
-            border: 1px solid #333;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            padding: 4px 14px;
-            text-align: center;
-            width: 120px;
-            outline: none;
-            text-transform: uppercase;
-        }
-        .room-code:focus { border-color: #ff0050; }
-        .btn-qr {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid #333;
-            color: #666;
-            border-radius: 8px;
-            padding: 8px 14px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .btn-qr:hover { border-color: #ff0050; color: #ff0050; }
+        .btn-glass:hover{border-color:rgba(255,0,80,.3);color:#ff0050}
 
         /* Player */
-        .player-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px 24px;
-            min-height: 0;
-            position: relative;
+        .player-zone{flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;padding:12px 20px}
+        .player-wrap{
+            width:100%;max-width:1100px;aspect-ratio:16/9;
+            background:rgba(255,255,255,.01);
+            border-radius:16px;overflow:hidden;
+            border:1px solid rgba(255,255,255,.04);
+            position:relative;transition:border-color .6s,box-shadow .6s;
         }
-        .player-wrapper {
-            width: 100%;
-            max-width: 1000px;
-            aspect-ratio: 16/9;
-            background: #0a0a0a;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-        }
-        #yt-player-div {
-            width: 100%;
-            height: 100%;
-        }
-        #yt-player-div iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .player-placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .player-placeholder .icon {
-            font-size: 48px;
-            color: #222;
-        }
-        .player-placeholder .text {
-            color: #444;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-        .player-placeholder .sub {
-            color: #333;
-            font-size: 11px;
-        }
+        .player-wrap.active{border-color:rgba(255,0,80,.12);box-shadow:0 0 60px rgba(255,0,80,.04)}
+        #yt-player-div{width:100%;height:100%}
+        #yt-player-div iframe{width:100%;height:100%;border:none}
+        .player-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+        .player-ph .ico{font-size:40px;opacity:.08}
+        .player-ph .txt{color:rgba(255,255,255,.15);font-size:14px;font-weight:500;letter-spacing:.5px}
+        .player-ph .sub{color:rgba(255,255,255,.06);font-size:11px}
 
-        /* Now playing bar */
-        .now-bar {
-            padding: 10px 24px;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-            min-height: 44px;
+        /* Overlays */
+        .ov-singer{
+            position:absolute;bottom:0;left:0;right:0;
+            padding:20px 24px 16px;
+            background:linear-gradient(transparent,rgba(0,0,0,.8));
+            pointer-events:none;
         }
-        .now-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #333;
-            flex-shrink: 0;
+        .ov-singer .s-label{font-size:9px;color:rgba(255,0,80,.7);text-transform:uppercase;letter-spacing:2.5px;font-weight:700;margin-bottom:3px}
+        .ov-singer .s-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.2px}
+
+        .ov-rx{position:absolute;top:12px;right:14px;display:flex;gap:10px;pointer-events:none}
+        .rx-pill{
+            display:flex;align-items:center;gap:6px;
+            background:rgba(0,0,0,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+            border:1px solid rgba(255,255,255,.06);
+            padding:5px 12px 5px 8px;border-radius:20px;font-size:15px;
         }
-        .now-dot.active {
-            background: #00ff00;
-            box-shadow: 0 0 8px rgba(0,255,0,0.4);
-            animation: pulse 2s ease-in-out infinite;
+        .rx-pill .rx-n{font-size:16px;font-weight:700;min-width:18px;text-align:center}
+        .rx-pill.stars .rx-n{color:#FFD700}
+        .rx-pill.toms .rx-n{color:#ff4455}
+
+        /* Floating reactions */
+        #rx-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+        .fl-rx{position:absolute;bottom:12%;transition:all 2.4s cubic-bezier(.15,.85,.35,1);opacity:1;pointer-events:none;filter:drop-shadow(0 0 6px rgba(0,0,0,.5))}
+
+        /* Now bar */
+        .now-bar{
+            padding:7px 20px;border-top:1px solid rgba(255,255,255,.03);
+            display:flex;align-items:center;gap:8px;flex-shrink:0;min-height:34px;
+            background:rgba(255,255,255,.01);
         }
-        @keyframes pulse {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .now-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.08);flex-shrink:0;transition:all .3s}
+        .now-dot.on{background:#00ff00;box-shadow:0 0 8px rgba(0,255,0,.35);animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+        .now-txt{font-size:11px;color:rgba(255,255,255,.2);font-weight:500;transition:color .3s}
+        .now-txt.on{color:rgba(255,255,255,.8)}
+        .now-skip{
+            margin-left:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+            color:rgba(255,255,255,.2);border-radius:8px;padding:4px 12px;cursor:pointer;
+            font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;transition:all .2s;
         }
-        .now-text {
-            font-size: 13px;
-            color: #555;
-            font-weight: 600;
-        }
-        .now-text.active { color: #ffffff; }
-        .now-skip {
-            margin-left: auto;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid #333;
-            color: #666;
-            border-radius: 6px;
-            padding: 5px 14px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-        }
-        .now-skip:hover { border-color: #ff0050; color: #ff0050; }
+        .now-skip:hover{border-color:rgba(255,0,80,.3);color:#ff0050}
 
         /* Queue */
-        .queue-area {
-            flex-shrink: 0;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            max-height: 28vh;
-            overflow-y: auto;
+        .queue-zone{flex-shrink:0;border-top:1px solid rgba(255,255,255,.03);max-height:24vh;overflow-y:auto}
+        .queue-hdr{display:flex;justify-content:space-between;align-items:center;padding:6px 20px;border-bottom:1px solid rgba(255,255,255,.02)}
+        .queue-hdr h3{font-size:8px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:2px;font-weight:600}
+        .queue-cnt{font-size:8px;color:rgba(255,0,80,.5);font-weight:600}
+        .q-item{
+            display:flex;align-items:center;padding:7px 14px;gap:10px;font-size:11px;
+            border-left:3px solid rgba(255,0,80,.5);margin:3px 16px;border-radius:0 8px 8px 0;
+            color:rgba(255,100,128,.8);transition:all .2s;
         }
-        .queue-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+        .q-item.cur{border-left-color:rgba(0,255,0,.6);color:rgba(0,255,0,.9);background:rgba(0,255,0,.025)}
+        .q-item .q-n{font-size:8px;color:rgba(255,255,255,.1);width:14px;text-align:center;flex-shrink:0;font-weight:600}
+        .q-item.cur .q-n{color:rgba(0,255,0,.3)}
+        .q-empty{padding:14px 20px;color:rgba(255,255,255,.06);font-size:10px;text-align:center;font-weight:400}
+        .queue-zone::-webkit-scrollbar{width:2px}
+        .queue-zone::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:2px}
+
+        /* ===== COUNTDOWN ===== */
+        #screen-countdown{
+            display:none;position:fixed;inset:0;z-index:80;
+            background:#000;
+            background-image:radial-gradient(ellipse at 50% 40%,rgba(255,0,80,.03) 0%,transparent 60%);
+            flex-direction:column;align-items:center;justify-content:center;text-align:center;
         }
-        .queue-header h3 {
-            font-size: 10px;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-        .queue-count {
-            font-size: 10px;
-            color: #ff0050;
-            font-weight: 700;
-        }
-        .queue-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 24px;
-            gap: 10px;
-            font-size: 13px;
-            color: #999;
-            border-left: 3px solid #333;
-            margin-left: 24px;
-            transition: all 0.15s;
-        }
-        .queue-item:hover { background: rgba(255,255,255,0.02); }
-        .queue-num {
-            font-size: 10px;
-            color: #444;
-            font-weight: 700;
-            width: 16px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .queue-name { flex: 1; }
-        .queue-empty {
-            padding: 20px 24px;
-            color: #333;
-            font-size: 12px;
-            text-align: center;
-            font-style: italic;
+        .cd-label{font-size:10px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:3px;font-weight:600;margin-bottom:4px}
+        .cd-name{font-size:30px;font-weight:700;color:#fff;margin-bottom:28px;letter-spacing:-.3px}
+        .cd-scores{display:flex;gap:44px;justify-content:center;margin-bottom:14px}
+        .cd-sc{text-align:center}
+        .cd-sc .cd-e{font-size:32px;margin-bottom:2px;filter:drop-shadow(0 0 8px rgba(0,0,0,.5))}
+        .cd-sc .cd-v{font-size:34px;font-weight:700}
+        .cd-sc.st .cd-v{color:#FFD700;text-shadow:0 0 20px rgba(255,215,0,.2)}
+        .cd-sc.to .cd-v{color:#ff4455;text-shadow:0 0 20px rgba(255,68,85,.2)}
+        .cd-verdict{font-size:14px;font-weight:700;letter-spacing:2px;margin-bottom:28px;min-height:20px;text-transform:uppercase}
+        .cd-verdict.good{color:rgba(0,255,0,.8)}
+        .cd-verdict.bad{color:rgba(255,68,85,.8)}
+        .cd-verdict.neutral{color:rgba(255,255,255,.2)}
+        .cd-line{width:60px;height:1px;background:rgba(255,255,255,.06);margin:0 auto 24px}
+        .cd-nxt-lbl{font-size:9px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:3px;font-weight:600;margin-bottom:4px}
+        .cd-nxt-name{font-size:22px;font-weight:700;color:#fff;margin-bottom:28px;letter-spacing:-.2px}
+        .cd-num{
+            font-size:68px;font-weight:700;color:#ff0050;line-height:1;
+            text-shadow:0 0 40px rgba(255,0,80,.3),0 0 80px rgba(255,0,80,.08);
         }
 
-        /* QR Modal */
-        .qr-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
+        /* ===== QR MODAL ===== */
+        .qr-ov{
+            display:none;position:fixed;inset:0;z-index:150;
+            background:rgba(0,0,0,.75);
+            backdrop-filter:blur(30px) saturate(120%);-webkit-backdrop-filter:blur(30px) saturate(120%);
+            align-items:center;justify-content:center;
         }
-        .qr-overlay.open { display: flex; }
-        .qr-modal {
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 520px;
-            width: 90%;
-            text-align: center;
+        .qr-ov.open{display:flex}
+        .qr-card{
+            background:rgba(255,255,255,.03);
+            border:1px solid rgba(255,255,255,.06);
+            border-radius:24px;padding:32px 28px 28px;max-width:480px;width:90%;text-align:center;
+            box-shadow:0 40px 100px rgba(0,0,0,.6);
         }
-        .qr-modal h2 {
-            font-size: 14px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #fff;
-            margin-bottom: 24px;
+        .qr-card h2{font-size:16px;font-weight:600;letter-spacing:-.2px;color:rgba(255,255,255,.8);margin-bottom:24px}
+        .qr-pair{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+        .qr-it{text-align:center}
+        .qr-fr{background:#fff;border-radius:12px;padding:6px;display:inline-block;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+        .qr-rl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
+        .qr-rl.dj{color:rgba(255,215,0,.8)}
+        .qr-rl.guest{color:rgba(255,0,80,.8)}
+        .qr-rd{font-size:9px;color:rgba(255,255,255,.2)}
+        .qr-note{margin-top:18px;font-size:9px;color:rgba(255,255,255,.12);line-height:1.6}
+        .qr-btn{
+            margin-top:20px;
+            background:linear-gradient(135deg,#ff0050,#d6004a);
+            color:#fff;border:none;border-radius:14px;padding:14px 44px;cursor:pointer;
+            font-size:13px;font-weight:600;letter-spacing:.5px;
+            box-shadow:0 4px 20px rgba(255,0,80,.15);
+            transition:transform .15s,box-shadow .3s;
         }
-        .qr-pair {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            flex-wrap: wrap;
-        }
-        .qr-item {
-            text-align: center;
-        }
-        .qr-frame {
-            background: #fff;
-            border-radius: 10px;
-            padding: 6px;
-            display: inline-block;
-            margin-bottom: 8px;
-        }
-        .qr-role {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
-        }
-        .qr-role.dj { color: #FFD700; }
-        .qr-role.guest { color: #ff0050; }
-        .qr-desc {
-            font-size: 10px;
-            color: #555;
-        }
-        .qr-note {
-            margin-top: 20px;
-            font-size: 10px;
-            color: #444;
-            line-height: 1.5;
-        }
-        .qr-close {
-            margin-top: 20px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid #333;
-            color: #888;
-            border-radius: 8px;
-            padding: 10px 32px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-        }
-        .qr-close:hover { border-color: #fff; color: #fff; }
+        .qr-btn:active{transform:scale(.97)}
+        .qr-btn:hover{box-shadow:0 6px 28px rgba(255,0,80,.25)}
 
-        /* Brand */
-        .brand {
-            position: fixed;
-            bottom: 8px;
-            right: 16px;
-            font-size: 9px;
-            color: #1a1a1a;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
+        /* Watermark */
+        .wm{position:fixed;bottom:6px;right:12px;font-size:7px;color:rgba(255,255,255,.04);letter-spacing:2px;text-transform:uppercase;font-weight:600;z-index:5;pointer-events:none}
 
-        /* Scrollbar */
-        .queue-area::-webkit-scrollbar { width: 4px; }
-        .queue-area::-webkit-scrollbar-track { background: transparent; }
-        .queue-area::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
-
-        @media (max-width: 768px) {
-            .header { padding: 10px 14px; }
-            .player-area { padding: 10px 14px; }
-            .now-bar { padding: 8px 14px; }
-            .queue-area { max-height: 22vh; }
-            .queue-item { margin-left: 14px; padding: 6px 14px; }
-            .queue-header { padding: 6px 14px; }
-            .room-code { width: 90px; font-size: 16px; letter-spacing: 3px; }
+        @media(max-width:768px){
+            .setup-card{padding:36px 28px 32px}
+            .setup-title{font-size:22px}
+            .hdr{padding:8px 12px}
+            .player-zone{padding:8px 10px}
+            .now-bar{padding:5px 12px}
+            .queue-zone{max-height:18vh}
+            .q-item{margin:2px 10px}
+            .ov-singer .s-name{font-size:16px}
+            .cd-name{font-size:22px}.cd-num{font-size:52px}.cd-nxt-name{font-size:18px}
         }
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
-            <span class="mic">&#127908;</span>
-            <span class="title">Karaoke de Oscar Alborta</span>
+<!-- SETUP -->
+<div id="screen-setup">
+    <div class="setup-card">
+        <div class="setup-title">Crea tu fiesta</div>
+        <div class="setup-sub">Ponle un código a tu sala de karaoke</div>
+        <input type="text" id="code-input" maxlength="6" placeholder="CÓDIGO" autocomplete="off" autofocus>
+        <button id="btn-enter">Entrar</button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div id="screen-main">
+    <div class="hdr">
+        <div class="hdr-left">
+            <span class="hdr-mic">&#127908;</span>
+            <span class="hdr-tit">Karaoke</span>
         </div>
-        <div class="header-right">
-            <span class="room-label">Sala</span>
-            <input type="text" id="room-input" class="room-code" maxlength="6" aria-label="Código de sala">
-            <button class="btn-qr" id="btn-show-qr" aria-label="Mostrar códigos QR">QR</button>
+        <div class="hdr-right">
+            <span class="room-lbl">Sala</span>
+            <span class="room-val" id="room-display"></span>
+            <button class="btn-glass" id="btn-qr">QR</button>
         </div>
     </div>
-
-    <!-- Player -->
-    <div class="player-area">
-        <div class="player-wrapper">
+    <div class="player-zone">
+        <div class="player-wrap" id="player-wrap">
             <div id="yt-player-div"></div>
-            <div class="player-placeholder" id="yt-placeholder">
-                <div class="icon">&#127908;</div>
-                <div class="text">Esperando canciones</div>
+            <div class="player-ph" id="player-ph">
+                <div class="ico">&#127908;</div>
+                <div class="txt">Esperando canciones</div>
                 <div class="sub">Los invitados pueden enviar desde su mando</div>
             </div>
+            <div class="ov-singer" id="ov-singer" style="display:none">
+                <div class="s-label">Cantando</div>
+                <div class="s-name" id="s-name"></div>
+            </div>
+            <div class="ov-rx" id="ov-rx" style="display:none">
+                <div class="rx-pill stars"><span>&#11088;</span><span class="rx-n" id="rx-s">0</span></div>
+                <div class="rx-pill toms"><span>&#127813;</span><span class="rx-n" id="rx-t">0</span></div>
+            </div>
+            <div id="rx-layer"></div>
         </div>
     </div>
-
-    <!-- Now Playing Bar -->
     <div class="now-bar">
         <div class="now-dot" id="now-dot"></div>
-        <span class="now-text" id="now-text">Sin reproducción</span>
-        <button class="now-skip" id="btn-skip" aria-label="Saltar canción">SALTAR &#9654;&#9654;</button>
+        <span class="now-txt" id="now-txt">Sin reproducción</span>
+        <button class="now-skip" id="btn-skip">SALTAR &#9654;&#9654;</button>
     </div>
-
-    <!-- Queue -->
-    <div class="queue-area" id="queue-area">
-        <div class="queue-header">
-            <h3>En espera <span class="queue-count" id="queue-count"></span></h3>
+    <div class="queue-zone" id="queue-zone">
+        <div class="queue-hdr">
+            <h3>En espera <span class="queue-cnt" id="queue-cnt"></span></h3>
         </div>
-        <div id="queue-list">
-            <div class="queue-empty">Cola vacía</div>
-        </div>
+        <div id="queue-list"><div class="q-empty">Cola vacía</div></div>
     </div>
+</div>
 
-    <!-- QR Modal -->
-    <div class="qr-overlay" id="qr-overlay">
-        <div class="qr-modal">
-            <h2>Códigos QR</h2>
-            <div class="qr-pair">
-                <div class="qr-item">
-                    <div class="qr-frame">
-                        <img id="qr-dj" src="" alt="QR DJ" width="150" height="150">
-                    </div>
-                    <div class="qr-role dj">Mando DJ</div>
-                    <div class="qr-desc">Saltar, pausar, borrar</div>
-                </div>
-                <div class="qr-item">
-                    <div class="qr-frame">
-                        <img id="qr-guest" src="" alt="QR Invitado" width="150" height="150">
-                    </div>
-                    <div class="qr-role guest">Mando Invitado</div>
-                    <div class="qr-desc">Solo pedir canciones</div>
-                </div>
+<!-- COUNTDOWN -->
+<div id="screen-countdown">
+    <div class="cd-label">Puntuación de</div>
+    <div class="cd-name" id="cd-name"></div>
+    <div class="cd-scores">
+        <div class="cd-sc st"><div class="cd-e">&#11088;</div><div class="cd-v" id="cd-s">0</div></div>
+        <div class="cd-sc to"><div class="cd-e">&#127813;</div><div class="cd-v" id="cd-t">0</div></div>
+    </div>
+    <div class="cd-verdict" id="cd-v"></div>
+    <div class="cd-line"></div>
+    <div class="cd-nxt-lbl">Siguiente</div>
+    <div class="cd-nxt-name" id="cd-nn"></div>
+    <div class="cd-num" id="cd-num"></div>
+</div>
+
+<!-- QR MODAL -->
+<div class="qr-ov" id="qr-ov">
+    <div class="qr-card">
+        <h2>Comparte para unirse</h2>
+        <div class="qr-pair">
+            <div class="qr-it">
+                <div class="qr-fr"><img id="qr-dj" src="" alt="QR DJ" width="130" height="130"></div>
+                <div class="qr-rl dj">Mando DJ</div>
+                <div class="qr-rd">Saltar, borrar, votar</div>
             </div>
-            <div class="qr-note">
-                Escanea con el móvil o abre los mandos en pestañas del mismo navegador del ordenador conectado a la TV.
+            <div class="qr-it">
+                <div class="qr-fr"><img id="qr-guest" src="" alt="QR Invitado" width="130" height="130"></div>
+                <div class="qr-rl guest">Mando Invitado</div>
+                <div class="qr-rd">Solo pedir y votar</div>
             </div>
-            <button class="qr-close" id="btn-close-qr">CERRAR</button>
         </div>
+        <div class="qr-note">Escanea con la cámara de tu móvil para controlar desde el teléfono</div>
+        <button class="qr-btn" id="btn-close-qr">Comenzar</button>
     </div>
+</div>
 
-    <div class="brand">Karaoke de Oscar Alborta</div>
+<div class="wm">Karaoke de Oscar Alborta</div>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script>var _yt=document.createElement('script');_yt.src='https://www.youtube.com/iframe_api';document.head.appendChild(_yt);</script>
 
-    <!-- YouTube IFrame API -->
-    <script>
-        var ytApiTag = document.createElement('script');
-        ytApiTag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(ytApiTag);
-    </script>
+<script>
+var firebaseConfig={apiKey:"AIzaSyCvRlHlmkCsK1PMTgKda-IW_ZpFCs4OMfc",authDomain:"karaoke-oa01.firebaseapp.com",databaseURL:"https://karaoke-oa01-default-rtdb.firebaseio.com",projectId:"karaoke-oa01",storageBucket:"karaoke-oa01.firebasestorage.app",messagingSenderId:"494779868067",appId:"1:494779868067:web:10768f9f3d88e7e8c6f016",measurementId:"G-HV4BKVH5FY"};
+firebase.initializeApp(firebaseConfig);var db=firebase.database();
 
-    <script>
-        /* =============================================
-           FIREBASE
-           ============================================= */
-        var firebaseConfig = {
-            apiKey: "AIzaSyCvRlHlmkCsK1PMTgKda-IW_ZpFCs4OMfc",
-            authDomain: "karaoke-oa01.firebaseapp.com",
-            databaseURL: "https://karaoke-oa01-default-rtdb.firebaseio.com",
-            projectId: "karaoke-oa01",
-            storageBucket: "karaoke-oa01.firebasestorage.app",
-            messagingSenderId: "494779868067",
-            appId: "1:494779868067:web:10768f9f3d88e7e8c6f016",
-            measurementId: "G-HV4BKVH5FY"
-        };
-        firebase.initializeApp(firebaseConfig);
-        var db = firebase.database();
+var roomCode='',queueRef=null,stateRef=null,reactionsRef=null,lastSingerRef=null,countdownEndRef=null;
+var currentState='idle',currentVideoId=null,currentSingerName='',starCount=0,tomatoCount=0;
+var ytPlayer=null,ytApiReady=false,pendingVideoId=null,processingEnd=false,reactionsLoaded=false;
+var countdownTimer=null,countdownEndTime=0;
 
-        /* =============================================
-           ESTADO
-           ============================================= */
-        var roomCode = '';
-        var queueRef = null;
-        var ytPlayer = null;
-        var ytApiReady = false;
-        var pendingVideoId = null;
-        var currentPlayingId = null;
+function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
+function verdict(s,t){if(!s&&!t)return{text:'Sin votos',c:'neutral'};if(s>t*2)return{text:'Legendario',c:'good'};if(s>t)return{text:'Muy bien',c:'good'};if(s===t)return{text:'Empate',c:'neutral'};return{text:'Necesita práctica',c:'bad'}}
 
-        /* =============================================
-           ROOM CODE
-           ============================================= */
-        function generateCode() {
-            var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            var code = '';
-            for (var i = 0; i < 4; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
+function connectRoom(code){
+    if(queueRef)queueRef.off();if(stateRef)stateRef.off();if(reactionsRef)reactionsRef.off();if(countdownEndRef)countdownEndRef.off();
+    roomCode=code;var base=db.ref('rooms/'+roomCode);
+    queueRef=base.child('queue');stateRef=base.child('state');reactionsRef=base.child('reactions');
+    lastSingerRef=base.child('lastSinger');countdownEndRef=base.child('countdownEnd');
+    queueRef.on('value',onQueueChange);
+    stateRef.on('value',function(s){var v=s.val()||'idle';if(v!==currentState){currentState=v;onStateChange()}});
+    reactionsRef.on('child_added',function(s){var r=s.val();if(reactionsLoaded)spawnRx(r.type);if(r.type==='star')starCount++;else tomatoCount++;updRxOv()});
+    reactionsRef.once('value',function(){reactionsLoaded=true});
+    countdownEndRef.on('value',function(s){countdownEndTime=s.val()||0;if(currentState==='countdown'&&countdownEndTime>0)startCDTimer()});
+    document.getElementById('screen-setup').style.display='none';
+    document.getElementById('screen-main').style.display='flex';
+    document.getElementById('room-display').textContent=roomCode;
+    updQR();
+    document.getElementById('qr-ov').classList.add('open');
+}
 
-        function setRoom(code) {
-            // Desconectar referencia anterior
-            if (queueRef) {
-                queueRef.off();
-            }
-            roomCode = code;
-            queueRef = db.ref('rooms/' + roomCode + '/queue');
-            queueRef.on('value', onQueueChange);
-            updateQRCodes();
-        }
+function updQR(){
+    if(roomCode.length<3)return;
+    var b=window.location.href.substring(0,window.location.href.lastIndexOf('/'));
+    document.getElementById('qr-dj').src='https://api.qrserver.com/v1/create-qr-code/?size=130x130&data='+encodeURIComponent(b+'/mando.html?room='+roomCode+'&role=dj');
+    document.getElementById('qr-guest').src='https://api.qrserver.com/v1/create-qr-code/?size=130x130&data='+encodeURIComponent(b+'/mando.html?room='+roomCode+'&role=guest');
+}
 
-        /* =============================================
-           QR CODES
-           ============================================= */
-        function updateQRCodes() {
-            var code = roomCode;
-            if (code.length < 3) return;
+function onYouTubeIframeAPIReady(){ytApiReady=true;if(pendingVideoId){createPlay(pendingVideoId);pendingVideoId=null}}
+function createPlay(vid){
+    if(!vid)return;
+    if(ytPlayer){try{var d=ytPlayer.getVideoData();if(d&&d.video_id===vid)return}catch(e){}ytPlayer.loadVideoById(vid);showP();return}
+    var c=document.getElementById('yt-player-div');c.innerHTML='';
+    ytPlayer=new YT.Player(c,{width:'100%',height:'100%',videoId:vid,playerVars:{autoplay:1,controls:1,modestbranding:1,rel:0,fs:1,playsinline:1},events:{onStateChange:function(e){if(e.data===YT.PlayerState.ENDED)onVidEnd()}}});
+    showP();
+}
+function showP(){document.getElementById('player-ph').style.display='none';document.getElementById('player-wrap').classList.add('active')}
+function showPH(){document.getElementById('player-ph').style.display='flex';document.getElementById('player-wrap').classList.remove('active')}
 
-            var basePath = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-            var urlDj = basePath + '/mando.html?room=' + code + '&role=dj';
-            var urlGuest = basePath + '/mando.html?room=' + code + '&role=guest';
+function spawnRx(type){
+    var el=document.createElement('div');el.className='fl-rx';el.textContent=type==='star'?'\u2B50':'\uD83C\uDF45';
+    el.style.left=(8+Math.random()*84)+'%';el.style.fontSize=(26+Math.random()*20)+'px';
+    document.getElementById('rx-layer').appendChild(el);
+    requestAnimationFrame(function(){el.style.transform='translateY(-'+(220+Math.random()*160)+'px) rotate('+(Math.random()*50-25)+'deg) scale(1.5)';el.style.opacity='0'});
+    setTimeout(function(){el.remove()},2600);
+}
+function updRxOv(){document.getElementById('rx-s').textContent=starCount;document.getElementById('rx-t').textContent=tomatoCount}
 
-            document.getElementById('qr-dj').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(urlDj);
-            document.getElementById('qr-guest').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(urlGuest);
-        }
+function onQueueChange(snap){
+    var data=snap.val(),keys=data?Object.keys(data):[],first=keys.length?data[keys[0]]:null,nv=first?first.videoId:null;
+    renderQ(data,keys);
+    if(currentState==='playing'&&!processingEnd&&nv!==currentVideoId&&currentVideoId!==null){endSong();return}
+    if(currentState==='idle'&&nv)startPlay(nv,first.name);
+}
 
-        /* =============================================
-           YOUTUBE PLAYER
-           ============================================= */
-        function onYouTubeIframeAPIReady() {
-            ytApiReady = true;
-            if (pendingVideoId) {
-                createAndPlay(pendingVideoId);
-                pendingVideoId = null;
-            }
-        }
+function renderQ(data,keys){
+    var el=document.getElementById('queue-list'),cnt=document.getElementById('queue-cnt'),w=keys.length>1?keys.slice(1):[];
+    if(!data||!keys.length){el.innerHTML='<div class="q-empty">Cola vacía</div>';cnt.textContent='';return}
+    cnt.textContent='('+w.length+')';var h='';
+    h+='<div class="q-item cur"><span class="q-n">1</span><span>'+esc(data[keys[0]].name)+' (Sonando)</span></div>';
+    for(var i=0;i<w.length;i++)h+='<div class="q-item"><span class="q-n">'+(i+2)+'</span><span>'+esc(data[w[i]].name)+'</span></div>';
+    el.innerHTML=h;
+}
 
-        function createAndPlay(videoId) {
-            if (!videoId) return;
+function onStateChange(){
+    if(currentState==='playing'){
+        document.getElementById('screen-countdown').style.display='none';document.getElementById('screen-main').style.display='flex';stopCDTimer();
+        queueRef.orderByKey().limitToFirst(1).once('value',function(s){var d=s.val();if(d){var k=Object.keys(d)[0],it=d[k];if(it.videoId!==currentVideoId)startPlay(it.videoId,it.name)}});
+    }else if(currentState==='countdown'){
+        document.getElementById('screen-main').style.display='none';document.getElementById('screen-countdown').style.display='flex';showCD();if(countdownEndTime>0)startCDTimer();
+    }else{
+        document.getElementById('screen-countdown').style.display='none';document.getElementById('screen-main').style.display='flex';stopCDTimer();
+        stopPlayer();showPH();currentVideoId=null;currentSingerName='';
+        document.getElementById('ov-singer').style.display='none';document.getElementById('ov-rx').style.display='none';
+        document.getElementById('now-dot').classList.remove('on');document.getElementById('now-txt').classList.remove('on');
+        document.getElementById('now-txt').textContent='Sin reproducción';
+    }
+}
 
-            // Si el player ya existe y está reproduciendo el mismo video, no hacer nada
-            if (ytPlayer) {
-                try {
-                    var data = ytPlayer.getVideoData();
-                    if (data && data.video_id === videoId) return;
-                } catch(e) {}
-                // Cargar nuevo video en player existente
-                ytPlayer.loadVideoById(videoId);
-                showPlayer();
-                return;
-            }
+function startPlay(vid,name){
+    currentVideoId=vid;currentSingerName=name||'Anónimo';
+    reactionsRef.remove();starCount=0;tomatoCount=0;updRxOv();
+    document.getElementById('s-name').textContent=currentSingerName;
+    document.getElementById('ov-singer').style.display='block';document.getElementById('ov-rx').style.display='flex';
+    document.getElementById('now-dot').classList.add('on');document.getElementById('now-txt').classList.add('on');
+    document.getElementById('now-txt').textContent=currentSingerName+' — Reproduciendo';
+    if(ytApiReady)createPlay(vid);else pendingVideoId=vid;
+    stateRef.set('playing');
+}
 
-            // Crear player nuevo
-            var container = document.getElementById('yt-player-div');
-            container.innerHTML = '';
+function onVidEnd(){if(!processingEnd)endSong()}
 
-            ytPlayer = new YT.Player(container, {
-                width: '100%',
-                height: '100%',
-                videoId: videoId,
-                playerVars: {
-                    autoplay: 1,
-                    controls: 1,
-                    modestbranding: 1,
-                    rel: 0,
-                    fs: 1,
-                    playsinline: 1
-                },
-                events: {
-                    onStateChange: function(event) {
-                        if (event.data === YT.PlayerState.ENDED) {
-                            skipCurrentSong();
-                        }
-                    }
-                }
-            });
-
-            showPlayer();
-        }
-
-        function showPlayer() {
-            document.getElementById('yt-placeholder').style.display = 'none';
-        }
-
-        function showPlaceholder() {
-            document.getElementById('yt-placeholder').style.display = 'flex';
-        }
-
-        /* =============================================
-           COLA - LÓGICA
-           ============================================= */
-        function onQueueChange(snapshot) {
-            var data = snapshot.val();
-            var listEl = document.getElementById('queue-list');
-            var countEl = document.getElementById('queue-count');
-            var nowDot = document.getElementById('now-dot');
-            var nowText = document.getElementById('now-text');
-
-            if (!data) {
-                // Cola vacía
-                listEl.innerHTML = '<div class="queue-empty">Cola vacía</div>';
-                countEl.textContent = '';
-                nowDot.classList.remove('active');
-                nowText.classList.remove('active');
-                nowText.textContent = 'Sin reproducción';
-                currentPlayingId = null;
-                showPlaceholder();
-                return;
-            }
-
-            var keys = Object.keys(data);
-            var playing = data[keys[0]];
-            var waiting = keys.slice(1);
-
-            // Actualizar now playing
-            nowDot.classList.add('active');
-            nowText.classList.add('active');
-            nowText.textContent = playing.name + ' — Reproduciendo';
-            countEl.textContent = '(' + waiting.length + ')';
-
-            // Reproducir video si es diferente
-            if (playing.videoId !== currentPlayingId) {
-                currentPlayingId = playing.videoId;
-                if (ytApiReady) {
-                    createAndPlay(playing.videoId);
-                } else {
-                    pendingVideoId = playing.videoId;
-                }
-            }
-
-            // Renderizar cola de espera
-            if (waiting.length === 0) {
-                listEl.innerHTML = '<div class="queue-empty">No hay más canciones en espera</div>';
-                return;
-            }
-
-            var html = '';
-            var limit = 20;
-            var toShow = waiting.slice(0, limit);
-
-            for (var i = 0; i < toShow.length; i++) {
-                var item = data[toShow[i]];
-                html += '<div class="queue-item">';
-                html += '<span class="queue-num">' + (i + 1) + '</span>';
-                html += '<span class="queue-name">' + escapeHtml(item.name) + '</span>';
-                html += '</div>';
-            }
-
-            if (waiting.length > limit) {
-                html += '<div class="queue-empty">...y ' + (waiting.length - limit) + ' canción(es) más</div>';
-            }
-
-            listEl.innerHTML = html;
-        }
-
-        function skipCurrentSong() {
-            if (!queueRef) return;
-            queueRef.orderByKey().limitToFirst(1).once('value', function(snapshot) {
-                var data = snapshot.val();
-                if (data) {
-                    var firstKey = Object.keys(data)[0];
-                    queueRef.child(firstKey).remove();
-                }
-            });
-        }
-
-        function escapeHtml(text) {
-            var div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        /* =============================================
-           EVENTOS
-           ============================================= */
-        document.getElementById('btn-show-qr').addEventListener('click', function() {
-            document.getElementById('qr-overlay').classList.add('open');
+function endSong(){
+    if(processingEnd)return;processingEnd=true;
+    lastSingerRef.set({name:currentSingerName||'Anónimo',stars:starCount,tomatoes:tomatoCount});
+    queueRef.orderByKey().limitToFirst(1).once('value',function(s){
+        var d=s.val();if(d)queueRef.child(Object.keys(d)[0]).remove();
+        queueRef.once('value',function(s2){
+            var r=s2.val(),rk=r?Object.keys(r):[];currentVideoId=null;
+            if(rk.length>0){countdownEndTime=Date.now()+15000;countdownEndRef.set(countdownEndTime);stateRef.set('countdown')}
+            else stateRef.set('idle');
+            processingEnd=false;
         });
+    });
+}
 
-        document.getElementById('btn-close-qr').addEventListener('click', function() {
-            document.getElementById('qr-overlay').classList.remove('open');
-        });
+function showCD(){
+    lastSingerRef.once('value',function(s){var l=s.val()||{name:'?',stars:0,tomatoes:0};
+        document.getElementById('cd-name').textContent=l.name;document.getElementById('cd-s').textContent=l.stars;document.getElementById('cd-t').textContent=l.tomatoes;
+        var v=verdict(l.stars,l.tomatoes),ve=document.getElementById('cd-v');ve.textContent=v.text;ve.className='cd-verdict '+v.c;
+    });
+    queueRef.orderByKey().limitToFirst(1).once('value',function(s){var d=s.val();document.getElementById('cd-nn').textContent=d?Object.values(d)[0].name:'—'});
+}
 
-        document.getElementById('qr-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('open');
-            }
-        });
+function startCDTimer(){stopCDTimer();countdownTimer=setInterval(function(){var r=Math.ceil((countdownEndTime-Date.now())/1000);if(r<=0){stopCDTimer();onCDEnd()}else document.getElementById('cd-num').textContent=r},100)}
+function stopCDTimer(){if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}}
+function onCDEnd(){stopCDTimer();reactionsRef.remove();starCount=0;tomatoCount=0;updRxOv();countdownEndRef.remove();stateRef.set('playing')}
 
-        document.getElementById('btn-skip').addEventListener('click', function() {
-            skipCurrentSong();
-        });
-
-        document.getElementById('room-input').addEventListener('input', function(e) {
-            var code = e.target.value.trim().toUpperCase();
-            if (code.length >= 3) {
-                setRoom(code);
-            }
-        });
-
-        /* =============================================
-           INICIO
-           ============================================= */
-        roomCode = generateCode();
-        document.getElementById('room-input').value = roomCode;
-        setRoom(roomCode);
-    </script>
+document.getElementById('btn-enter').addEventListener('click',function(){
+    var c=document.getElementById('code-input').value.trim().toUpperCase();
+    if(c.length<3){document.getElementById('code-input').style.borderColor='rgba(255,68,85,.6)';setTimeout(function(){document.getElementById('code-input').style.borderColor='rgba(255,255,255,.07)'},1000);return}
+    connectRoom(c);
+});
+document.getElementById('code-input').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btn-enter').click()});
+document.getElementById('btn-qr').addEventListener('click',function(){document.getElementById('qr-ov').classList.add('open')});
+document.getElementById('btn-close-qr').addEventListener('click',function(){document.getElementById('qr-ov').classList.remove('open')});
+document.getElementById('qr-ov').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+document.getElementById('btn-skip').addEventListener('click',function(){if(currentState==='playing')endSong();else if(currentState==='countdown')onCDEnd()});
+</script>
 </body>
 </html>
