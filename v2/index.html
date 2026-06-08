@@ -2,106 +2,676 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TV Karaoke V2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karaoke de Oscar Alborta</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: radial-gradient(circle at top, #111 0%, #000 100%); }
-        #setup-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; }
-        #setup-screen h1 { margin: 0 0 10px 0; font-weight: 300; font-size: 28px; letter-spacing: 6px; text-transform: uppercase; color: #888;}
-        #setup-screen p { color: #555; font-size: 13px; letter-spacing: 1px; margin-bottom: 30px; text-transform: uppercase;}
-        #setup-screen input { padding: 18px 24px; font-size: 28px; text-align: center; border-radius: 16px; border: none; background: rgba(255,255,255,0.05); color: white; text-transform: uppercase; letter-spacing: 8px; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5); width: 320px; }
-        #setup-screen button { margin-top: 20px; padding: 16px 40px; font-size: 16px; background: linear-gradient(135deg, #ff0050 0%, #cc0040 100%); color: white; border: none; border-radius: 14px; cursor: pointer; font-weight: 700; letter-spacing: 2px; box-shadow: 0 8px 25px rgba(255, 0, 80, 0.3);}
-        .qr-container { display: none; margin-top: 50px; gap: 40px; }
-        .qr-box { text-align: center; background: rgba(20,20,20,0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
-        .qr-box h3 { font-size: 11px; color: #555; margin: 15px 0 5px 0; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;}
-        .qr-box.dj h3 { color: #ff4477; }
-        .qr-box img { border-radius: 10px; border: 2px solid rgba(255,255,255,0.05); }
-        #player { width: 100vw; height: 100vh; }
-        .hud-box { position: fixed; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); color: #666; font-size: 13px; font-weight: 500; letter-spacing: 1px;}
-        #room-code-display { top: 20px; left: 20px; padding: 8px 16px; color: #777;}
-        #status { top: 20px; right: 20px; padding: 8px 16px; }
-        #singer-label { position: fixed; bottom: 30px; left: 30px; color: #ddd; font-size: 18px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); padding: 10px 24px; border-radius: 30px; z-index: 9999; border: 1px solid rgba(255,255,255,0.05); display: none; font-weight: 500;}
-        #vote-display { position: fixed; bottom: 30px; right: 30px; display: none; flex-direction: column; align-items: flex-end; z-index: 9999; gap: 8px; }
-        .vote-box { background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 30px; font-size: 22px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.05);}
-        #star-count { color: #ffdd00; font-weight: bold; }
-        #tomato-count { color: #ff4444; font-weight: bold; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 999999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
-        #countdown-overlay .next-text { font-size: 14px; color: #555; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 5px; font-weight: 600;}
-        #countdown-overlay .next-name { font-size: 48px; font-weight: 300; margin-bottom: 10px; color: #eee; letter-spacing: 2px;}
-        #countdown-overlay .result { font-size: 20px; color: #888; margin-bottom: 20px; font-weight: 500;}
-        #countdown-overlay .timer { font-size: 80px; color: #ff0050; font-weight: 200; letter-spacing: -5px; }
-        #blocked-overlay .blocked-icon { font-size: 60px; margin-bottom: 25px; color: #ff0050; opacity: 0.8; }
-        #blocked-overlay .blocked-text { font-size: 24px; font-weight: 600; color: #ff4477; margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; }
-        #blocked-overlay .blocked-sub { font-size: 16px; color: #555; line-height: 1.5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-left .mic {
+            color: #ff0050;
+            font-size: 22px;
+        }
+        .header-left .title {
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .room-label {
+            font-size: 11px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .room-code {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff0050;
+            letter-spacing: 5px;
+            border: 1px solid #333;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 4px 14px;
+            text-align: center;
+            width: 120px;
+            outline: none;
+            text-transform: uppercase;
+        }
+        .room-code:focus { border-color: #ff0050; }
+        .btn-qr {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid #333;
+            color: #666;
+            border-radius: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-qr:hover { border-color: #ff0050; color: #ff0050; }
+
+        /* Player */
+        .player-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 24px;
+            min-height: 0;
+            position: relative;
+        }
+        .player-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            background: #0a0a0a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+        #yt-player-div {
+            width: 100%;
+            height: 100%;
+        }
+        #yt-player-div iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .player-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .player-placeholder .icon {
+            font-size: 48px;
+            color: #222;
+        }
+        .player-placeholder .text {
+            color: #444;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        .player-placeholder .sub {
+            color: #333;
+            font-size: 11px;
+        }
+
+        /* Now playing bar */
+        .now-bar {
+            padding: 10px 24px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            min-height: 44px;
+        }
+        .now-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            flex-shrink: 0;
+        }
+        .now-dot.active {
+            background: #00ff00;
+            box-shadow: 0 0 8px rgba(0,255,0,0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .now-text {
+            font-size: 13px;
+            color: #555;
+            font-weight: 600;
+        }
+        .now-text.active { color: #ffffff; }
+        .now-skip {
+            margin-left: auto;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid #333;
+            color: #666;
+            border-radius: 6px;
+            padding: 5px 14px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .now-skip:hover { border-color: #ff0050; color: #ff0050; }
+
+        /* Queue */
+        .queue-area {
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            max-height: 28vh;
+            overflow-y: auto;
+        }
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .queue-header h3 {
+            font-size: 10px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+        .queue-count {
+            font-size: 10px;
+            color: #ff0050;
+            font-weight: 700;
+        }
+        .queue-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 24px;
+            gap: 10px;
+            font-size: 13px;
+            color: #999;
+            border-left: 3px solid #333;
+            margin-left: 24px;
+            transition: all 0.15s;
+        }
+        .queue-item:hover { background: rgba(255,255,255,0.02); }
+        .queue-num {
+            font-size: 10px;
+            color: #444;
+            font-weight: 700;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .queue-name { flex: 1; }
+        .queue-empty {
+            padding: 20px 24px;
+            color: #333;
+            font-size: 12px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* QR Modal */
+        .qr-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .qr-overlay.open { display: flex; }
+        .qr-modal {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+        }
+        .qr-modal h2 {
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+        .qr-pair {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+        .qr-item {
+            text-align: center;
+        }
+        .qr-frame {
+            background: #fff;
+            border-radius: 10px;
+            padding: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .qr-role {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .qr-role.dj { color: #FFD700; }
+        .qr-role.guest { color: #ff0050; }
+        .qr-desc {
+            font-size: 10px;
+            color: #555;
+        }
+        .qr-note {
+            margin-top: 20px;
+            font-size: 10px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .qr-close {
+            margin-top: 20px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid #333;
+            color: #888;
+            border-radius: 8px;
+            padding: 10px 32px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .qr-close:hover { border-color: #fff; color: #fff; }
+
+        /* Brand */
+        .brand {
+            position: fixed;
+            bottom: 8px;
+            right: 16px;
+            font-size: 9px;
+            color: #1a1a1a;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* Scrollbar */
+        .queue-area::-webkit-scrollbar { width: 4px; }
+        .queue-area::-webkit-scrollbar-track { background: transparent; }
+        .queue-area::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+
+        @media (max-width: 768px) {
+            .header { padding: 10px 14px; }
+            .player-area { padding: 10px 14px; }
+            .now-bar { padding: 8px 14px; }
+            .queue-area { max-height: 22vh; }
+            .queue-item { margin-left: 14px; padding: 6px 14px; }
+            .queue-header { padding: 6px 14px; }
+            .room-code { width: 90px; font-size: 16px; letter-spacing: 3px; }
+        }
     </style>
 </head>
 <body>
-    <div id="setup-screen">
-        <h1>Karaoke</h1>
-        <p>Configurar fiesta</p>
-        <input type="text" id="room-input" placeholder="CÓDIGO" maxlength="6">
-        <button onclick="startParty()">INICIAR</button>
-        <div class="qr-container" id="qr-container">
-            <div class="qr-box dj"><h3>Ctrl DJ</h3><img src="" id="qr-dj" width="150" height="150"></div>
-            <div class="qr-box"><h3>Invitados</h3><img src="" id="qr-guest" width="150" height="150"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <span class="mic">&#127908;</span>
+            <span class="title">Karaoke de Oscar Alborta</span>
+        </div>
+        <div class="header-right">
+            <span class="room-label">Sala</span>
+            <input type="text" id="room-input" class="room-code" maxlength="6" aria-label="Código de sala">
+            <button class="btn-qr" id="btn-show-qr" aria-label="Mostrar códigos QR">QR</button>
         </div>
     </div>
-    <div id="main-ui" style="display:none;">
-        <div id="room-code-display" class="hud-box">SALA <span id="code-text">----</span></div>
-        <div id="status" class="hud-box">COLA: <span id="count-text">0</span></div>
-        <div id="singer-label">🎤 <span id="singer-name">Anónimo</span></div>
-        <div id="vote-display">
-            <div class="vote-box"><span style="font-size:24px;">⭐</span> <span id="star-count">0</span></div>
-            <div class="vote-box"><span style="font-size:24px;">🍅</span> <span id="tomato-count">0</span></div>
+
+    <!-- Player -->
+    <div class="player-area">
+        <div class="player-wrapper">
+            <div id="yt-player-div"></div>
+            <div class="player-placeholder" id="yt-placeholder">
+                <div class="icon">&#127908;</div>
+                <div class="text">Esperando canciones</div>
+                <div class="sub">Los invitados pueden enviar desde su mando</div>
+            </div>
         </div>
-        <div id="countdown-overlay" class="overlay">
-            <div class="next-text">A continuación</div>
-            <div class="next-name" id="next-singer-name">Nadie</div>
-            <div class="result" id="vote-result"></div>
-            <div class="timer" id="countdown-timer">5</div>
-        </div>
-        <div id="blocked-overlay" class="overlay">
-            <div class="blocked-icon">⛔</div>
-            <div class="blocked-text">Video Bloqueado</div>
-            <div class="blocked-sub">Esta versión no se puede reproducir.<br>Prueba buscando otra versión.</div>
-        </div>
-        <div id="player"></div>
     </div>
-    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- Now Playing Bar -->
+    <div class="now-bar">
+        <div class="now-dot" id="now-dot"></div>
+        <span class="now-text" id="now-text">Sin reproducción</span>
+        <button class="now-skip" id="btn-skip" aria-label="Saltar canción">SALTAR &#9654;&#9654;</button>
+    </div>
+
+    <!-- Queue -->
+    <div class="queue-area" id="queue-area">
+        <div class="queue-header">
+            <h3>En espera <span class="queue-count" id="queue-count"></span></h3>
+        </div>
+        <div id="queue-list">
+            <div class="queue-empty">Cola vacía</div>
+        </div>
+    </div>
+
+    <!-- QR Modal -->
+    <div class="qr-overlay" id="qr-overlay">
+        <div class="qr-modal">
+            <h2>Códigos QR</h2>
+            <div class="qr-pair">
+                <div class="qr-item">
+                    <div class="qr-frame">
+                        <img id="qr-dj" src="" alt="QR DJ" width="150" height="150">
+                    </div>
+                    <div class="qr-role dj">Mando DJ</div>
+                    <div class="qr-desc">Saltar, pausar, borrar</div>
+                </div>
+                <div class="qr-item">
+                    <div class="qr-frame">
+                        <img id="qr-guest" src="" alt="QR Invitado" width="150" height="150">
+                    </div>
+                    <div class="qr-role guest">Mando Invitado</div>
+                    <div class="qr-desc">Solo pedir canciones</div>
+                </div>
+            </div>
+            <div class="qr-note">
+                Escanea con el móvil o abre los mandos en pestañas del mismo navegador del ordenador conectado a la TV.
+            </div>
+            <button class="qr-close" id="btn-close-qr">CERRAR</button>
+        </div>
+    </div>
+
+    <div class="brand">Karaoke de Oscar Alborta</div>
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <!-- YouTube IFrame API -->
     <script>
-        const firebaseConfig = {
+        var ytApiTag = document.createElement('script');
+        ytApiTag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(ytApiTag);
+    </script>
+
+    <script>
+        /* =============================================
+           FIREBASE
+           ============================================= */
+        var firebaseConfig = {
             apiKey: "AIzaSyCvRlHlmkCsK1PMTgKda-IW_ZpFCs4OMfc",
             authDomain: "karaoke-oa01.firebaseapp.com",
             databaseURL: "https://karaoke-oa01-default-rtdb.firebaseio.com",
             projectId: "karaoke-oa01",
             storageBucket: "karaoke-oa01.firebasestorage.app",
             messagingSenderId: "494779868067",
-            appId: "1:494779868067:web:10768f9f3d88e7e8c6f016"
+            appId: "1:494779868067:web:10768f9f3d88e7e8c6f016",
+            measurementId: "G-HV4BKVH5FY"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        let player, playlist = [], isPlaying = false, countdownInterval, forceNextPlay = false, queueRef, votesRef, currentVotes = { stars: 0, tomatoes: 0 };
-        function onYouTubeIframeAPIReady() { player = new YT.Player('player', { height: '100%', width: '100%', videoId: '', playerVars: { 'playsinline': 1, 'autoplay': 1, 'controls': 1 }, events: { 'onStateChange': onPlayerStateChange, 'onError': onPlayerError } }); }
-        function startParty() { let code = document.getElementById('room-input').value.trim().toUpperCase(); if(code.length < 3) { alert("Código corto"); return; } document.getElementById('setup-screen').style.display = 'none'; document.getElementById('main-ui').style.display = 'block'; document.getElementById('code-text').innerText = code; queueRef = db.ref('rooms/' + code + '/queue'); votesRef = db.ref('rooms/' + code + '/votes'); listenQueue(); listenVotes(); }
-        function listenVotes() { votesRef.on('value', (s) => { currentVotes = s.val() || { stars: 0, tomatoes: 0 }; document.getElementById('star-count').innerText = currentVotes.stars; document.getElementById('tomato-count').innerText = currentVotes.tomatoes; document.getElementById('vote-display').style.display = isPlaying ? 'flex' : 'none'; }); }
-        function resetVotes() { votesRef.set({ stars: 0, tomatoes: 0 }); }
-        function listenQueue() { queueRef.on('child_added', (s) => { playlist.push({ id: s.key, videoId: s.val().videoId, name: s.val().name }); document.getElementById('count-text').innerText = playlist.length; if (!isPlaying) playNext(); }); queueRef.on('child_removed', (s) => { playlist = playlist.filter(i => i.id !== s.key); document.getElementById('count-text').innerText = playlist.length; if (forceNextPlay) { forceNextPlay = false; playNext(); } else { if (playlist.length > 0 || isPlaying) playNext(); } }); }
-        function onPlayerStateChange(e) { if (e.data == YT.PlayerState.ENDED) { if (playlist.length > 1) showCountdown(playlist[1].name); else queueRef.child(playlist[0].id).remove(); } }
-        function onPlayerError() { let o = document.getElementById("blocked-overlay"); o.style.display = 'flex'; setTimeout(() => { o.style.display = 'none'; forceNextPlay = true; queueRef.child(playlist[0].id).remove(); }, 4000); }
-        function showCountdown(nextName) { let o = document.getElementById('countdown-overlay'), n = document.getElementById('next-singer-name'), t = document.getElementById('countdown-timer'), r = document.getElementById('vote-result'); let rt = ""; if (currentVotes.stars > 0 || currentVotes.tomatoes > 0) { if(currentVotes.stars > currentVotes.tomatoes) rt = `¡APLAUSOS! (${currentVotes.stars}⭐ / ${currentVotes.tomatoes}🍅)`; else rt = `TOMATEADO (${currentVotes.stars}⭐ / ${currentVotes.tomatoes)🍅)`; } r.innerText = rt; n.innerText = nextName || "Anónimo"; o.style.display = 'flex'; let tl = 5; t.innerText = tl; countdownInterval = setInterval(() => { tl--; t.innerText = tl; if (tl <= 0) { clearInterval(countdownInterval); o.style.display = 'none'; forceNextPlay = true; queueRef.child(playlist[0].id).remove(); playlist.shift(); resetVotes(); playNext(); } }, 1000); }
-        function playNext() { if (playlist.length > 0) { isPlaying = true; player.loadVideoById(playlist[0].videoId); document.getElementById('count-text').innerText = playlist.length; document.getElementById("singer-name").innerText = playlist[0].name || "Anónimo"; document.getElementById("singer-label").style.display = "block"; resetVotes(); } else { isPlaying = false; player.stopVideo(); document.getElementById('count-text').innerText = "0"; document.getElementById("singer-label").style.display = "none"; } }
-        document.getElementById('room-input').addEventListener('input', function(e) {
-            let code = e.target.value.trim().toUpperCase();
-            if(code.length >= 3) {
-                let basePath = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + 'mando.html';
-                let urlDj = basePath + "?room=" + code + "&role=dj";
-                document.getElementById('qr-dj').src = "https://api.qrserver.com/v1/create-raw-qr-code/?size=150x150&data=" + urlDj;
-                document.getElementById('qr-guest").src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + urlGuest;
-                document.getElementById('qr-container').style.display = 'flex'; 
-            } else { 
-                document.getElementById('qr-container').style.display = 'none'; 
+        var db = firebase.database();
+
+        /* =============================================
+           ESTADO
+           ============================================= */
+        var roomCode = '';
+        var queueRef = null;
+        var ytPlayer = null;
+        var ytApiReady = false;
+        var pendingVideoId = null;
+        var currentPlayingId = null;
+
+        /* =============================================
+           ROOM CODE
+           ============================================= */
+        function generateCode() {
+            var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            var code = '';
+            for (var i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-        });    </script>
+            return code;
+        }
+
+        function setRoom(code) {
+            // Desconectar referencia anterior
+            if (queueRef) {
+                queueRef.off();
+            }
+            roomCode = code;
+            queueRef = db.ref('rooms/' + roomCode + '/queue');
+            queueRef.on('value', onQueueChange);
+            updateQRCodes();
+        }
+
+        /* =============================================
+           QR CODES
+           ============================================= */
+        function updateQRCodes() {
+            var code = roomCode;
+            if (code.length < 3) return;
+
+            var basePath = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+            var urlDj = basePath + '/mando.html?room=' + code + '&role=dj';
+            var urlGuest = basePath + '/mando.html?room=' + code + '&role=guest';
+
+            document.getElementById('qr-dj').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(urlDj);
+            document.getElementById('qr-guest').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(urlGuest);
+        }
+
+        /* =============================================
+           YOUTUBE PLAYER
+           ============================================= */
+        function onYouTubeIframeAPIReady() {
+            ytApiReady = true;
+            if (pendingVideoId) {
+                createAndPlay(pendingVideoId);
+                pendingVideoId = null;
+            }
+        }
+
+        function createAndPlay(videoId) {
+            if (!videoId) return;
+
+            // Si el player ya existe y está reproduciendo el mismo video, no hacer nada
+            if (ytPlayer) {
+                try {
+                    var data = ytPlayer.getVideoData();
+                    if (data && data.video_id === videoId) return;
+                } catch(e) {}
+                // Cargar nuevo video en player existente
+                ytPlayer.loadVideoById(videoId);
+                showPlayer();
+                return;
+            }
+
+            // Crear player nuevo
+            var container = document.getElementById('yt-player-div');
+            container.innerHTML = '';
+
+            ytPlayer = new YT.Player(container, {
+                width: '100%',
+                height: '100%',
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 1,
+                    modestbranding: 1,
+                    rel: 0,
+                    fs: 1,
+                    playsinline: 1
+                },
+                events: {
+                    onStateChange: function(event) {
+                        if (event.data === YT.PlayerState.ENDED) {
+                            skipCurrentSong();
+                        }
+                    }
+                }
+            });
+
+            showPlayer();
+        }
+
+        function showPlayer() {
+            document.getElementById('yt-placeholder').style.display = 'none';
+        }
+
+        function showPlaceholder() {
+            document.getElementById('yt-placeholder').style.display = 'flex';
+        }
+
+        /* =============================================
+           COLA - LÓGICA
+           ============================================= */
+        function onQueueChange(snapshot) {
+            var data = snapshot.val();
+            var listEl = document.getElementById('queue-list');
+            var countEl = document.getElementById('queue-count');
+            var nowDot = document.getElementById('now-dot');
+            var nowText = document.getElementById('now-text');
+
+            if (!data) {
+                // Cola vacía
+                listEl.innerHTML = '<div class="queue-empty">Cola vacía</div>';
+                countEl.textContent = '';
+                nowDot.classList.remove('active');
+                nowText.classList.remove('active');
+                nowText.textContent = 'Sin reproducción';
+                currentPlayingId = null;
+                showPlaceholder();
+                return;
+            }
+
+            var keys = Object.keys(data);
+            var playing = data[keys[0]];
+            var waiting = keys.slice(1);
+
+            // Actualizar now playing
+            nowDot.classList.add('active');
+            nowText.classList.add('active');
+            nowText.textContent = playing.name + ' — Reproduciendo';
+            countEl.textContent = '(' + waiting.length + ')';
+
+            // Reproducir video si es diferente
+            if (playing.videoId !== currentPlayingId) {
+                currentPlayingId = playing.videoId;
+                if (ytApiReady) {
+                    createAndPlay(playing.videoId);
+                } else {
+                    pendingVideoId = playing.videoId;
+                }
+            }
+
+            // Renderizar cola de espera
+            if (waiting.length === 0) {
+                listEl.innerHTML = '<div class="queue-empty">No hay más canciones en espera</div>';
+                return;
+            }
+
+            var html = '';
+            var limit = 20;
+            var toShow = waiting.slice(0, limit);
+
+            for (var i = 0; i < toShow.length; i++) {
+                var item = data[toShow[i]];
+                html += '<div class="queue-item">';
+                html += '<span class="queue-num">' + (i + 1) + '</span>';
+                html += '<span class="queue-name">' + escapeHtml(item.name) + '</span>';
+                html += '</div>';
+            }
+
+            if (waiting.length > limit) {
+                html += '<div class="queue-empty">...y ' + (waiting.length - limit) + ' canción(es) más</div>';
+            }
+
+            listEl.innerHTML = html;
+        }
+
+        function skipCurrentSong() {
+            if (!queueRef) return;
+            queueRef.orderByKey().limitToFirst(1).once('value', function(snapshot) {
+                var data = snapshot.val();
+                if (data) {
+                    var firstKey = Object.keys(data)[0];
+                    queueRef.child(firstKey).remove();
+                }
+            });
+        }
+
+        function escapeHtml(text) {
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        /* =============================================
+           EVENTOS
+           ============================================= */
+        document.getElementById('btn-show-qr').addEventListener('click', function() {
+            document.getElementById('qr-overlay').classList.add('open');
+        });
+
+        document.getElementById('btn-close-qr').addEventListener('click', function() {
+            document.getElementById('qr-overlay').classList.remove('open');
+        });
+
+        document.getElementById('qr-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('open');
+            }
+        });
+
+        document.getElementById('btn-skip').addEventListener('click', function() {
+            skipCurrentSong();
+        });
+
+        document.getElementById('room-input').addEventListener('input', function(e) {
+            var code = e.target.value.trim().toUpperCase();
+            if (code.length >= 3) {
+                setRoom(code);
+            }
+        });
+
+        /* =============================================
+           INICIO
+           ============================================= */
+        roomCode = generateCode();
+        document.getElementById('room-input').value = roomCode;
+        setRoom(roomCode);
+    </script>
 </body>
 </html>
