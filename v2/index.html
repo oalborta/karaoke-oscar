@@ -91,7 +91,17 @@
         function onPlayerError() { let o = document.getElementById("blocked-overlay"); o.style.display = 'flex'; setTimeout(() => { o.style.display = 'none'; forceNextPlay = true; queueRef.child(playlist[0].id).remove(); }, 4000); }
         function showCountdown(nextName) { let o = document.getElementById('countdown-overlay'), n = document.getElementById('next-singer-name'), t = document.getElementById('countdown-timer'), r = document.getElementById('vote-result'); let rt = ""; if (currentVotes.stars > 0 || currentVotes.tomatoes > 0) { if(currentVotes.stars > currentVotes.tomatoes) rt = `¡APLAUSOS! (${currentVotes.stars}⭐ / ${currentVotes.tomatoes}🍅)`; else rt = `TOMATEADO (${currentVotes.stars}⭐ / ${currentVotes.tomatoes)🍅)`; } r.innerText = rt; n.innerText = nextName || "Anónimo"; o.style.display = 'flex'; let tl = 5; t.innerText = tl; countdownInterval = setInterval(() => { tl--; t.innerText = tl; if (tl <= 0) { clearInterval(countdownInterval); o.style.display = 'none'; forceNextPlay = true; queueRef.child(playlist[0].id).remove(); playlist.shift(); resetVotes(); playNext(); } }, 1000); }
         function playNext() { if (playlist.length > 0) { isPlaying = true; player.loadVideoById(playlist[0].videoId); document.getElementById('count-text').innerText = playlist.length; document.getElementById("singer-name").innerText = playlist[0].name || "Anónimo"; document.getElementById("singer-label").style.display = "block"; resetVotes(); } else { isPlaying = false; player.stopVideo(); document.getElementById('count-text').innerText = "0"; document.getElementById("singer-label").style.display = "none"; } }
-        document.getElementById('room-input').addEventListener('input', function(e) { let code = e.target.value.trim().toUpperCase(); if(code.length >= 3) { let p = window.location.pathname.split('/'); p.pop(); let base = window.location.origin + p.join('/') + '/mando.html'; document.getElementById('qr-dj').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + base + "?room=" + code + "&role=dj"; document.getElementById('qr-guest').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + base + "?room=" + code + "&role=guest"; document.getElementById('qr-container').style.display = 'flex'; } else { document.getElementById('qr-container').style.display = 'none'; } });
-    </script>
+        document.getElementById('room-input').addEventListener('input', function(e) {
+            let code = e.target.value.trim().toUpperCase();
+            if(code.length >= 3) {
+                let basePath = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + 'mando.html';
+                let urlDj = basePath + "?room=" + code + "&role=dj";
+                document.getElementById('qr-dj').src = "https://api.qrserver.com/v1/create-raw-qr-code/?size=150x150&data=" + urlDj;
+                document.getElementById('qr-guest").src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + urlGuest;
+                document.getElementById('qr-container').style.display = 'flex'; 
+            } else { 
+                document.getElementById('qr-container').style.display = 'none'; 
+            }
+        });    </script>
 </body>
 </html>
