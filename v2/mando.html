@@ -6,202 +6,124 @@
     <title>Mando Karaoke</title>
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        body{
-            font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-            background:#000;color:#fff;height:100vh;height:100dvh;display:flex;justify-content:center;
-            background-image:radial-gradient(ellipse at 30% 0%,rgba(255,0,80,.03) 0%,transparent 50%),
-                radial-gradient(ellipse at 70% 100%,rgba(255,215,0,.015) 0%,transparent 40%);
-        }
-        .container{
-            width:100%;max-width:420px;padding:28px 20px 24px;
-            background:rgba(255,255,255,.012);
-            backdrop-filter:blur(50px) saturate(130%);-webkit-backdrop-filter:blur(50px) saturate(130%);
-            border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);
-            overflow-y:auto;-webkit-overflow-scrolling:touch;
-        }
+        body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#000;color:#fff;height:100vh;height:100dvh;display:flex;justify-content:center;background-image:radial-gradient(ellipse at 30% 0%,rgba(255,0,80,.03) 0%,transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(255,215,0,.015) 0%,transparent 40%)}
+        .container{width:100%;max-width:420px;padding:28px 20px 24px;background:rgba(255,255,255,.012);backdrop-filter:blur(50px) saturate(130%);-webkit-backdrop-filter:blur(50px) saturate(130%);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);overflow-y:auto;-webkit-overflow-scrolling:touch}
         .container::-webkit-scrollbar{width:0}
-
-        /* Role */
         .rc{text-align:center;margin-bottom:6px}
         .rb{display:inline-block;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase}
         .rb.dj{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.18);color:rgba(255,215,0,.75)}
         .rb.guest{background:rgba(255,0,80,.07);border:1px solid rgba(255,0,80,.18);color:rgba(255,0,80,.75)}
         .ri{text-align:center;font-size:9px;color:rgba(255,255,255,.08);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:28px;font-weight:500}
         .ri strong{color:rgba(255,255,255,.15)}
-
-        /* Section labels */
         .sl{font-size:9px;color:rgba(255,255,255,.12);text-transform:uppercase;letter-spacing:2.5px;font-weight:600;margin-bottom:14px;padding-left:2px}
-
-        /* Inputs */
-        input{
-            width:100%;padding:18px 16px;font-size:15px;border-radius:14px;
-            border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025);color:#fff;
-            margin-bottom:10px;outline:none;transition:border-color .3s,box-shadow .3s;font-weight:500;
-        }
+        input{width:100%;padding:18px 16px;font-size:15px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025);color:#fff;margin-bottom:10px;outline:none;transition:border-color .3s,box-shadow .3s;font-weight:500}
         input:focus{border-color:rgba(255,0,80,.35);box-shadow:0 0 0 4px rgba(255,0,80,.06)}
         input::placeholder{color:rgba(255,255,255,.12);font-weight:400}
-
-        /* Buttons */
         .btn{width:100%;border:none;border-radius:14px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:transform .12s,box-shadow .3s,background .3s;font-family:inherit}
         .btn:active{transform:scale(.97)}
         .btn-add{padding:18px;font-size:16px;color:#fff;background:linear-gradient(135deg,#ff0050,#d6004a);box-shadow:0 6px 24px rgba(255,0,80,.12)}
-        .btn-add:active{box-shadow:0 2px 12px rgba(255,0,80,.08)}
         .btn-add.ok{background:linear-gradient(135deg,#00cc44,#009933)!important;box-shadow:0 6px 24px rgba(0,204,68,.12)!important}
         .btn-add.err{background:linear-gradient(135deg,#ff2222,#cc0000)!important;box-shadow:0 6px 24px rgba(255,34,34,.12)!important}
-
         .btn-skip{padding:16px;font-size:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.4);margin-top:14px;letter-spacing:1px;text-transform:uppercase}
         .btn-skip:active{border-color:rgba(255,0,80,.3);color:#ff0050;background:rgba(255,0,80,.06)}
-
         .btn-share{padding:13px;font-size:11px;background:transparent;border:1px solid rgba(255,255,255,.03);color:rgba(255,255,255,.1);margin-top:28px;letter-spacing:.5px}
         .btn-share:active{border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.2)}
-
         .yt-link{display:block;width:100%;text-align:center;color:rgba(255,255,255,.25);font-size:13px;font-weight:600;text-decoration:none;padding:14px;border:1px solid rgba(255,0,80,.15);border-radius:14px;margin-top:10px;transition:all .2s}
-        .yt-link:active{background:rgba(255,0,80,.05)}
-        .yt-link span{color:#ff0050}
+        .yt-link:active{background:rgba(255,0,80,.05)}.yt-link span{color:#ff0050}
         .yt-hint{display:block;text-align:center;color:rgba(255,255,255,.06);font-size:10px;margin-top:6px}
-
-        /* Queue */
         .qh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
         .qh h3{font-size:9px;color:rgba(255,255,255,.18);text-transform:uppercase;letter-spacing:2.5px;font-weight:600;margin:0}
         .qh .qc{font-size:9px;color:rgba(255,0,80,.45);font-weight:600}
         .cl-btn{background:none;border:none;color:rgba(255,255,255,.1);font-size:9px;cursor:pointer;text-transform:uppercase;letter-spacing:1.5px;padding:2px 6px;font-weight:600;font-family:inherit}
         .cl-btn:active{color:#ff0050}
-
-        .qi{
-            background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.035);
-            border-radius:12px;padding:12px 14px;margin-bottom:5px;
-            display:flex;justify-content:space-between;align-items:center;
-            font-size:13px;color:rgba(255,100,128,.65);transition:all .15s;
-        }
+        .qi{background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.035);border-radius:12px;padding:12px 14px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:rgba(255,100,128,.65);transition:all .15s}
         .qi.cur{border-color:rgba(0,255,0,.12);background:rgba(0,255,0,.025);color:rgba(0,255,0,.8)}
         .qi-l{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;flex-shrink:0}
         .qi-l.cur{color:rgba(0,255,0,.5)}.qi-l.w{color:rgba(255,255,255,.08)}
         .q-empty{padding:18px 8px;color:rgba(255,255,255,.05);font-size:11px;text-align:center;font-weight:400}
-
-        /* Reactions */
-        .rx-card{
-            background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.05);
-            border-radius:22px;padding:6px;display:flex;gap:6px;margin-top:28px;
-        }
-        .rx-b{
-            flex:1;padding:24px 8px 18px;border-radius:18px;font-size:40px;text-align:center;
-            cursor:pointer;border:none;-webkit-tap-highlight-color:transparent;
-            transition:transform .1s,background .12s,box-shadow .15s;font-family:inherit;
-        }
+        .rx-card{background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.05);border-radius:22px;padding:6px;display:flex;gap:6px;margin-top:28px}
+        .rx-b{flex:1;padding:24px 8px 18px;border-radius:18px;font-size:40px;text-align:center;cursor:pointer;border:none;-webkit-tap-highlight-color:transparent;transition:transform .1s,background .12s,box-shadow .15s;font-family:inherit}
         .rx-b:active{transform:scale(.86)}
         .rx-b .rx-l{display:block;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:6px;opacity:.5}
-        .rx-s{background:rgba(255,215,0,.05);color:#FFD700;border:1px solid rgba(255,215,0,.1)}
-        .rx-s:active{background:rgba(255,215,0,.16);box-shadow:0 0 24px rgba(255,215,0,.12)}
-        .rx-tom{background:rgba(255,0,80,.05);color:#ff0050;border:1px solid rgba(255,0,80,.1)}
-        .rx-tom:active{background:rgba(255,0,80,.16);box-shadow:0 0 24px rgba(255,0,80,.12)}
-
+        .rx-s{background:rgba(255,215,0,.05);color:#FFD700;border:1px solid rgba(255,215,0,.1)}.rx-s:active{background:rgba(255,215,0,.16);box-shadow:0 0 24px rgba(255,215,0,.12)}
+        .rx-tom{background:rgba(255,0,80,.05);color:#ff0050;border:1px solid rgba(255,0,80,.1)}.rx-tom:active{background:rgba(255,0,80,.16);box-shadow:0 0 24px rgba(255,0,80,.12)}
         #qr-s{margin-top:16px;text-align:center;padding:14px;background:rgba(255,255,255,.01);border-radius:14px;border:1px solid rgba(255,255,255,.03);display:none}
-        #qr-s img{border-radius:10px}
-        #qr-s p{color:rgba(255,255,255,.08);font-size:9px;margin:6px 0 0;text-transform:uppercase;letter-spacing:1.5px}
-
+        #qr-s img{border-radius:10px}#qr-s p{color:rgba(255,255,255,.08);font-size:9px;margin:6px 0 0;text-transform:uppercase;letter-spacing:1.5px}
         .wm{margin-top:32px;font-size:7px;color:rgba(255,255,255,.025);letter-spacing:2px;text-transform:uppercase;text-align:center;font-weight:600}
-
-        .err-s{text-align:center;padding:60px 20px}
-        .err-s .ei{font-size:44px;margin-bottom:14px;opacity:.5}
-        .err-s h2{color:#ff0050;margin-bottom:6px;font-size:18px;font-weight:600}
-        .err-s p{color:rgba(255,255,255,.18);font-size:12px;line-height:1.7}
-
+        /* <-- FIX: errores visibles --> */
+        .err-s{text-align:center;padding:60px 24px}
+        .err-s .ei{font-size:48px;margin-bottom:16px;opacity:.8}
+        .err-s h2{color:#ff0050;font-size:18px;font-weight:600;margin-bottom:10px}
+        .err-s p{color:rgba(255,255,255,.5);font-size:13px;line-height:1.7}
+        .err-s .err-url{color:rgba(255,255,255,.15);font-size:10px;word-break:break-all;margin-top:12px;padding:10px;background:rgba(255,255,255,.03);border-radius:8px;font-family:monospace}
         #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);padding:11px 22px;border-radius:14px;font-size:12px;font-weight:600;z-index:999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;background:rgba(15,15,15,.9);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:#fff;letter-spacing:.3px}
         #toast.show{transform:translateX(-50%) translateY(0)}
         #toast.ok{border-color:rgba(0,255,0,.25);color:rgba(0,255,0,.8)}
         #toast.err{border-color:rgba(255,0,80,.25);color:rgba(255,0,80,.8)}
-
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
     </style>
 </head>
 <body>
 <div class="container" id="app"></div>
 <div id="toast"></div>
-
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
 <script>
 var firebaseConfig={apiKey:"AIzaSyCvRlHlmkCsK1PMTgKda-IW_ZpFCs4OMfc",authDomain:"karaoke-oa01.firebaseapp.com",databaseURL:"https://karaoke-oa01-default-rtdb.firebaseio.com",projectId:"karaoke-oa01",storageBucket:"karaoke-oa01.firebasestorage.app",messagingSenderId:"494779868067",appId:"1:494779868067:web:10768f9f3d88e7e8c6f016",measurementId:"G-HV4BKVH5FY"};
 firebase.initializeApp(firebaseConfig);var db=firebase.database();
 var roomCode='',role='',queueRef=null,stateRef=null,reactionsRef=null;
-
 function extractVideoId(u){var r=/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;var m=u.match(r);return(m&&m[7].length==11)?m[7]:false}
 function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
-
 var toastT=null;
 function showToast(m,t){var e=document.getElementById('toast');e.textContent=m;e.className='';if(t==='ok')e.className='ok';else if(t==='err')e.className='err';void e.offsetWidth;e.classList.add('show');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('show')},2000)}
-
-function flashBtn(ok){var b=document.getElementById('btn-add');b.classList.add(ok?'ok':'err');setTimeout(function(){b.classList.remove('ok','err')},400)}
-
-function addToQueue(){
-    var u=document.getElementById('url-input'),n=document.getElementById('name-input'),v=extractVideoId(u.value);
-    if(v){queueRef.push({videoId:v,name:n.value||'Anónimo'});u.value='';n.value='';flashBtn(true);showToast('Enviado a la cola','ok')}
-    else{flashBtn(false);showToast('Link no válido','err')}
-}
-
-function skipSong(){
-    stateRef.once('value',function(s){var st=s.val();
-        if(st==='countdown'){reactionsRef.remove();db.ref('rooms/'+roomCode+'/countdownEnd').remove();stateRef.set('playing');showToast('Countdown saltado','ok')}
-        else if(st==='playing'){queueRef.orderByKey().limitToFirst(1).once('value',function(s){var d=s.val();if(d){queueRef.child(Object.keys(d)[0]).remove();showToast('Canción saltada','ok')}else showToast('No hay canciones','err')})}
-        else showToast('No hay canción activa','err')}
-    });
-}
-
+function flashBtn(ok){var b=document.getElementById('btn-add');if(!b)return;b.classList.add(ok?'ok':'err');setTimeout(function(){b.classList.remove('ok','err')},400)}
+function addToQueue(){var u=document.getElementById('url-input'),n=document.getElementById('name-input'),v=extractVideoId(u.value);if(v){queueRef.push({videoId:v,name:n.value||'Anónimo'});u.value='';n.value='';flashBtn(true);showToast('Enviado a la cola','ok')}else{flashBtn(false);showToast('Link no válido','err')}}
+function skipSong(){stateRef.once('value',function(s){var st=s.val();if(st==='countdown'){reactionsRef.remove();db.ref('rooms/'+roomCode+'/countdownEnd').remove();stateRef.set('playing');showToast('Countdown saltado','ok')}else if(st==='playing'){queueRef.orderByKey().limitToFirst(1).once('value',function(s){var d=s.val();if(d){queueRef.child(Object.keys(d)[0]).remove();showToast('Canción saltada','ok')}else showToast('No hay canciones','err')})}else showToast('No hay canción activa','err')})}
 function clearQueue(){if(confirm('¿Borrar toda la lista?')){queueRef.remove();stateRef.set('idle');reactionsRef.remove();showToast('Cola borrada','ok')}}
 function sendStar(){reactionsRef.push({type:'star'})}
 function sendTomato(){reactionsRef.push({type:'tomato'})}
 function toggleQR(){var q=document.getElementById('qr-s');q.style.display=(q.style.display==='none'||q.style.display==='')?'block':'none'}
+function renderQueue(snap){var data=snap.val(),div=document.getElementById('qd');if(!div)return;var h='<div class="qh"><h3>En espera <span class="qc"></span></h3>';if(role==='dj')h+='<button class="cl-btn" onclick="clearQueue()">Limpiar</button>';h+='</div>';if(data){var k=Object.keys(data),p=data[k[0]],w=k.slice(1);h+='<div class="qi cur"><span>'+esc(p.name)+'</span><span class="qi-l cur">Sonando</span></div>';var sh=w.slice(0,6);for(var i=0;i<sh.length;i++)h+='<div class="qi"><span>'+esc(data[sh[i]].name)+'</span><span class="qi-l w">Listo</span></div>';if(w.length>6)h+='<div class="q-empty">...y '+(w.length-6)+' más</div>'}else h+='<div class="q-empty">Vacía</div>';div.innerHTML=h;var cnt=div.querySelector('.qc');if(cnt)cnt.textContent='('+(data?Math.max(0,Object.keys(data).length-1):0)+')'}
 
-function renderQueue(snap){
-    var data=snap.val(),div=document.getElementById('qd');if(!div)return;
-    var h='<div class="qh"><h3>En espera <span class="qc" id="q-cnt"></span></h3>';if(role==='dj')h+='<button class="cl-btn" onclick="clearQueue()">Limpiar</button>';h+='</div>';
-    if(data){var k=Object.keys(data),p=data[k[0]],w=k.slice(1);
-        h+='<div class="qi cur"><span>'+esc(p.name)+'</span><span class="qi-l cur">Sonando</span></div>';
-        var sh=w.slice(0,6);for(var i=0;i<sh.length;i++)h+='<div class="qi"><span>'+esc(data[sh[i]].name)+'</span><span class="qi-l w">Listo</span></div>';
-        if(w.length>6)h+='<div class="q-empty">...y '+(w.length-6)+' más</div>';
-    }else h+='<div class="q-empty">Vacía</div>';
-    div.innerHTML=h;
-    var cnt=document.getElementById('q-cnt');if(cnt)cnt.textContent='('+(data?Math.max(0,Object.keys(data).length-1):0)+')';
-}
-
-function showError(m){document.getElementById('app').innerHTML='<div class="err-s"><div class="ei">&#9888;&#65039;</div><h2>Error</h2><p>'+m+'</p></div>'}
+/* <-- FIX: error visible con debug info --> */
+function showError(m){document.getElementById('app').innerHTML='<div class="err-s"><div class="ei">&#9888;&#65039;</div><h2>Error</h2><p>'+m+'</p><p class="err-url">'+esc(window.location.href)+'</p></div>'}
 
 function buildUI(){
     var isDj=role==='dj',h='';
     h+='<div class="rc"><span class="rb '+(isDj?'dj':'guest')+'">'+(isDj?'Control DJ':'Pedir canción')+'</span></div>';
     h+='<div class="ri">Sala <strong>'+esc(roomCode)+'</strong></div>';
-
     h+='<div class="sl">Agregar canción</div>';
     h+='<input type="text" id="name-input" placeholder="Tu nombre" autocomplete="off">';
     h+='<input type="text" id="url-input" placeholder="Pega el link de YouTube" autocomplete="off">';
     h+='<button class="btn btn-add" id="btn-add" onclick="addToQueue()">ENVIAR A COLA</button>';
     h+='<a href="https://www.youtube.com/results?search_query=karaoke+-vevo+-official+" target="_blank" class="yt-link">Buscar en YouTube <span>&#9654;</span></a>';
     h+='<span class="yt-hint">Copia el link y cierra la pestaña</span>';
-
     if(isDj)h+='<button class="btn btn-skip" onclick="skipSong()">Saltar canción</button>';
-
     h+='<div class="sl" style="margin-top:28px">En espera</div>';
     h+='<div id="qd"><div class="q-empty">Cargando...</div></div>';
-
     h+='<div class="rx-card"><button class="rx-b rx-s" onclick="sendStar()">&#11088;<span class="rx-l">Estrella</span></button><button class="rx-b rx-tom" onclick="sendTomato()">&#127813;<span class="rx-l">Tomate</span></button></div>';
-
     h+='<button class="btn btn-share" onclick="toggleQR()">Compartir mando</button>';
     h+='<div id="qr-s"><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(window.location.href)+'" alt="QR"><p>Escanear para unirse</p></div>';
     h+='<div class="wm">Karaoke de Oscar Alborta</div>';
-
     document.getElementById('app').innerHTML=h;
     document.getElementById('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')addToQueue()});
     document.getElementById('name-input').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('url-input').focus()});
 }
 
 function init(){
-    var p=new URLSearchParams(window.location.search);
-    roomCode=(p.get('room')||'').trim().toUpperCase();role=(p.get('role')||'').trim().toLowerCase();
-    if(roomCode.length<3){showError('Código no válido. Abre este mando desde la pantalla principal.');return}
-    if(role!=='dj'&&role!=='guest'){showError('Rol no reconocido.');return}
-    buildUI();var base=db.ref('rooms/'+roomCode);queueRef=base.child('queue');stateRef=base.child('state');reactionsRef=base.child('reactions');
-    queueRef.on('value',renderQueue);
+    try{
+        var p=new URLSearchParams(window.location.search);
+        roomCode=(p.get('room')||'').trim().toUpperCase();
+        role=(p.get('role')||'').trim().toLowerCase();
+        if(roomCode.length<3){showError('Falta el código de sala. Abre este mando escaneando el QR desde la pantalla principal.');return}
+        if(role!=='dj'&&role!=='guest'){showError('Rol no reconocido. El link debe incluir &role=dj o &role=guest.');return}
+        buildUI();
+        var base=db.ref('rooms/'+roomCode);
+        queueRef=base.child('queue');stateRef=base.child('state');reactionsRef=base.child('reactions');
+        queueRef.on('value',renderQueue);
+    }catch(e){
+        showError('No se pudo conectar: '+e.message);
+    }
 }
 init();
 </script>
